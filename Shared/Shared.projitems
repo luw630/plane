@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>75b169df-f497-4b03-9ae1-2ac98ff7fceb</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Shared</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)ByteBuffer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Cfgs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GenSrcs\_PT.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GenSrcs\_PT_ByteBuffer_Ext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GenSrcs\_PT_Enums.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GenSrcs\_PT_Partial.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GenSrcs\_PT_Pkg2Obj.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GenSrcs\_Cfg.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GenSrcs\_Cfg_ByteBuffer_Ext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GenSrcs\_Cfg_Enums.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GenSrcs\_Cfg_Partial.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GenSrcs\_Cfg_Pkg2Obj.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GenSrcs\_Pkg.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GenSrcs\_Pkg_ByteBuffer_Ext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GenSrcs\_Pkg_Enums.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GenSrcs\_Pkg_Partial.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GenSrcs\_Pkg_Pkg2Obj.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Random.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shared.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)State.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)XY.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)GenSrcs\_Cfg_packageId_config.csv" />
+    <None Include="$(MSBuildThisFileDirectory)GenSrcs\_Pkg_packageId_config.csv" />
+    <None Include="$(MSBuildThisFileDirectory)GenSrcs\_PT_packageId_config.csv" />
+  </ItemGroup>
+</Project>

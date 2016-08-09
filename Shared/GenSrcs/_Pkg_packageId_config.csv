@@ -1,0 +1,17 @@
+﻿1,,CS,Cast
+2,,CS,StopCast
+3,,CS,Join
+4,,CS,Quit
+5,,CS,Rotate
+6,,CS,Move
+7,,CS,StopMove
+8,,CS,Evolution
+9,,CS,Enhance
+10,,Sim,Rotate
+11,,CS,Aim
+12,,CS,CancelAim
+13,,SC,Join
+14,,SC,FullSync
+15,,SC,EventSync
+16,,Sim,Connect
+17,,Sim,Disconnect
