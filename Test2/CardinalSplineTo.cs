@@ -1,20 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using static Shared;
+﻿using System.Collections.Generic;
 using xxlib;
-using System.Windows.Threading;
 using System.Diagnostics;
 
 public class CardinalSplineTo
@@ -22,9 +7,7 @@ public class CardinalSplineTo
     List<XY> points = new List<XY>();
     float tension;
     float deltaT;
-    UIElement target;
     XY origin;
-    float radius;
     XY accumulatedDiff;
 
     public CardinalSplineTo(List<XY> points, float tension)
@@ -35,15 +18,13 @@ public class CardinalSplineTo
         deltaT = (float)1 / (points.Count - 1);
     }
 
-    public void StartWithTarget(UIElement target, XY origin, float radius)
+    public void StartWithTarget(XY origin)
     {
-        this.target = target;
         this.origin = origin;
-        this.radius = radius;
         accumulatedDiff.SetZero();
     }
 
-    public void Update(float time)
+    public XY Calc(float time)
     {
         int p;
         float lt;
@@ -52,16 +33,8 @@ public class CardinalSplineTo
         // p..p..p..p..p..p..p
         // 1..2..3..4..5..6..7
         // want p to be 1, 2, 3, 4, 5, 6
-        if (time == 1)
-        {
-            p = points.Count - 1;
-            lt = 1;
-        }
-        else
-        {
-            p = (int)(time / deltaT);
-            lt = (time - deltaT * (float)p) / deltaT;
-        }
+        p = (int)(time / deltaT);
+        lt = (time - deltaT * (float)p) / deltaT;
 
         // Interpolate
         var pp0 = points.CircleAt(p - 1);
@@ -69,22 +42,11 @@ public class CardinalSplineTo
         var pp2 = points.CircleAt(p + 1);
         var pp3 = points.CircleAt(p + 2);
 
-        var newPos = ccCardinalSplineAt(pp0, pp1, pp2, pp3, tension, lt);
-        Log("newPos = " + newPos);
-
-        UpdatePosition(newPos);
-    }
-
-    public void UpdatePosition(XY newPos)
-    {
-        newPos += origin;
-        newPos.x -= radius;
-        newPos.y -= radius;
-        target.SetPositon(newPos);
+        return origin + CardinalSplineAt(pp0, pp1, pp2, pp3, tension, lt);
     }
 
     // CatmullRom Spline formula:
-    public static XY ccCardinalSplineAt(XY p0, XY p1, XY p2, XY p3, float tension, float t)
+    public static XY CardinalSplineAt(XY p0, XY p1, XY p2, XY p3, float tension, float t)
     {
         float t2 = t * t;
         float t3 = t2 * t;

@@ -1,21 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using static Shared;
-using xxlib;
-using System.Windows.Threading;
-using System.Diagnostics;
+﻿using System.Windows.Controls;
 
 
 public class Scene
@@ -25,8 +8,8 @@ public class Scene
 
     public void Init(Canvas root, int ticks)
     {
-        fortrees1.Init(fortrees2, root, ticks, 0);
-        fortrees2.Init(fortrees1, root, ticks);
+        fortrees1.Init(root, fortrees2, ticks);
+        fortrees2.Init(root, fortrees1, ticks, true);
     }
     public void Update(int ticks)
     {
