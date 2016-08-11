@@ -99,6 +99,11 @@ namespace PT
             }
         }
 
+        public void AddFortrees(Fortress f)
+        {
+
+        }
+
         public bool Update(int ticks)
         {
             this.ticks = ticks;
@@ -112,6 +117,8 @@ namespace PT
                     RemovePlayer(a);
                 }
             }
+
+   
 
             // 2. 处理移动逻辑
             // 3. 处理增益行为逻辑( 加血啥的， 受上限影响 )

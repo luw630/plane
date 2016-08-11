@@ -6,6 +6,13 @@ namespace xxlib
 {
     public struct XY : IBBReader, IBBWriter
     {
+        public XY(float x, float y) { this.x = x; this.y = y; }
+
+        public void SetZero()
+        {
+            x = y = 0;
+        }
+
         public float x, y;
         public static XY operator *(XY a, float b)
         {
