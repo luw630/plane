@@ -219,7 +219,7 @@ namespace Test2
     /// </summary>
     public partial class MainWindow : Window
     {
-
+	 	Scene scene = new Scene();
         Fortrees fortrees = new Fortrees();
 
 //         Ellipse circle;
@@ -251,6 +251,7 @@ namespace Test2
                 executed = true;
                 accumulatMS -= Cfgs.logicFrameMS;
                 fortrees.Update(ticks);
+				scene.Update(ticks);
                 ++ticks;
             }
         }
@@ -265,6 +266,7 @@ namespace Test2
             t.Tick += T_Tick;
             t.Interval = new TimeSpan(0, 0, 0, 0, 1);
             t.Start();
+			scene.Init(root, ticks);
         }
 
         private void Window_MouseMove(object sender, MouseEventArgs e)
@@ -273,19 +275,3 @@ namespace Test2
     }
 }
 
-public static class DrawUtils
-{
-    public static void SetPositon(this UIElement o, XY xy)
-    {
-        Canvas.SetLeft(o, xy.x);
-        Canvas.SetTop(o, xy.y);
-    }
-    public static XY GetPosition(this UIElement o)
-    {
-        XY rtv;
-        rtv.x = (float)Canvas.GetLeft(o);
-        rtv.y = (float)Canvas.GetTop(o);
-        return rtv;
-    }
-
-}
