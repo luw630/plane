@@ -9,7 +9,7 @@ using Client;
 using System.Windows.Media;
 using System.Windows;
 using static Shared;
-
+using xxlib;
 
 namespace PT
 {
@@ -118,8 +118,6 @@ namespace PT
 
 
     // todo: 继承关系下的 DrawXxxxxxx 的 base.Xxxxxx 调用需要调整下面的代码
-
-
     partial class Plane
     {
         public Canvas v_bodyroot;
@@ -128,6 +126,7 @@ namespace PT
         public Rectangle v_hp;
         public Ellipse v_bornShield;
         public Ellipse v_target;
+
 
         public virtual void DrawInit()
         {
@@ -354,6 +353,8 @@ namespace PT
                     c.Remove(v_laser);
                     v_laser = null;
                 }
+                
+               
                 if (fireBeforeTicks == s.ticks)
                 {
                     v_laser = new Line();
@@ -468,4 +469,109 @@ public static class DrawUtils
         Canvas.SetTop(o, y);
     }
 
+    public static void SetPositon(this UIElement o, XY xy)
+    {
+        Canvas.SetLeft(o, xy.x);
+        Canvas.SetTop(o, xy.y);
+    }
+    public static XY GetPosition(this UIElement o)
+    {
+        XY rtv;
+        rtv.x = (float)Canvas.GetLeft(o);
+        rtv.y = (float)Canvas.GetTop(o);
+        return rtv;
+    }
+}
+
+partial class Fortrees
+{
+    Ellipse circle;             // 本体 显示对象
+    Ellipse bullet;             // 子弹 显示对象
+    Ellipse circlefill;
+    CardinalSplineTo action;    // 动作控制器
+    SolidColorBrush mySolidColorBrush;
+    Thickness thickness;
+
+    FortreesCfg cfg;
+    Fortrees others;            // 指向另外一个实例( 当前游戏模式就是两个 )
+    int timespan;               // 偏移时间 典型值 670 ( 可能因地图尺寸不同而需要调整 )
+
+    public int hp;              // 当前血量
+    public XY pos;              // 当前坐标
+    FortreesStates currState;   // 当前状态
+    int stateTicks;             // 当前状态的 timer
+    int moveTicks;              // 当前移动 ticks ( 与移动位置对应 )( move 状态专属 )
+    bool bulletAlive;           // 子弹存活中
+    XY bulletPos;               // 当前子弹位置( fire 状态专属 )
+    XY bulletMoveInc;           // 帧移动增量( 发射瞬间算出来的 )( fire 状态专属 )
+
+    public void DrawInit()
+    {
+
+        // var s = fsm.scene;
+
+        var s = new Size { width = (int)root.Width, height = (int)root.Height };
+        var wh = new Size { width = s.width - cfg.margin * 2, height = s.height - cfg.margin * 2 };
+
+        // area
+//         var rect = new Rectangle();
+//         rect.Width = wh.width;
+//         rect.Height = wh.height;
+//        // rect.Fill = Brushes.Green;
+//         rect.StrokeThickness = 2;
+//         rect.Stroke = Brushes.Red;
+//         rect.SetPositon(new XY(cfg.margin, cfg.margin));
+//         root.Children.Add(rect);
+
+        mySolidColorBrush = new SolidColorBrush();
+        mySolidColorBrush.Color = Color.FromArgb(255, 255, 0, 0);
+
+        circlefill = new Ellipse();
+        circlefill.Width = circlefill.Height = cfg.radius * 2;
+        circlefill.StrokeThickness = 2;
+        circlefill.Stroke = Brushes.Blue;
+
+        circlefill.Fill = mySolidColorBrush;
+
+
+        // circle
+        circle = new Ellipse();
+        circle.Width = circle.Height = cfg.radius * 2;
+        //circle.Width = circle.Height * 2;
+
+        circle.Fill = mySolidColorBrush;
+        //e.Fill = Brushes.Red;
+        circle.StrokeThickness = 2;
+        circle.Stroke = Brushes.Red;
+
+        root.Children.Add(circle);
+        root.Children.Add(circlefill);
+
+        // bullet
+        bullet = new Ellipse();
+        bullet.Width = bullet.Height = cfg.bulletRadius * 2;
+        //e.Fill = Brushes.Red;
+        bullet.StrokeThickness = 2;
+        bullet.Stroke = Brushes.Blue;
+        root.Children.Add(bullet);
+    }
+    public void DrawUpdate()
+    {
+        if (circle == null)
+        {
+            DrawInit();
+        }
+        circle.SetPositon(pos + new XY(-cfg.radius, -cfg.radius));
+        circlefill.SetPositon(pos + new XY(-cfg.radius, -cfg.radius));
+        if (bulletAlive)
+        {
+            bullet.Visibility = Visibility.Visible;
+            bullet.SetPositon(bulletPos + new XY(-cfg.bulletRadius, -cfg.bulletRadius));
+        }
+        else
+        {
+            bullet.Visibility = Visibility.Hidden;
+        }
+        Log("Fortrees Pos" + circle.GetPosition().x + "  " + circle.GetPosition().y);
+    }
 }

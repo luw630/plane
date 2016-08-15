@@ -239,6 +239,7 @@ namespace Client
                             else if (gotJoin && !gotFullSync && o.PackageId == SC.FullSync.packageId)
                             {
                                 var pkg = o as SC.FullSync;
+                                pkg.scene.Init(ticks);
                                 var s = fsm.scene = pkg.scene;
                                 s.Restore();
 
@@ -372,14 +373,14 @@ namespace Client
                         // 校验 FullSync 的值
                         if (pkg.debugInfo.dataLen > 0)
                         {
-                            var serverScene = new Scene();
-                            pkg.debugInfo.Read(ref serverScene);
-
-                            var diff = scene.FindDiff(serverScene);
-                            if (diff != null)
-                            {
-                                throw new Exception(diff);
-                            }
+//                             var serverScene = new Scene();
+//                             pkg.debugInfo.Read(ref serverScene);
+// 
+//                             var diff = scene.FindDiff(serverScene);
+//                             if (diff != null)
+//                             {
+//                                 throw new Exception(diff);
+//                             }
                         }
                     }
 

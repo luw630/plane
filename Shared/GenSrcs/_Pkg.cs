@@ -111,6 +111,7 @@ namespace SC
         /// 服务器完整的场景数据, 含各种自增id, 随机数池, 当前ticks......
         /// </summary>
         public PT.Scene scene = new PT.Scene();
+
     }
     /// <summary>
     /// 广播给 所有玩家 当前帧的行为同步( 于帧尾干这事, 对刚 Join 的人来说, 跟在 FullSync 后面发 )

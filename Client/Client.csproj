@@ -64,7 +64,10 @@
     <Compile Include="ClientFSM.cs" />
     <Compile Include="ClientDrawer.cs" />
     <Compile Include="Private\EmptyFuncs.cs" />
+    <Compile Include="Shared\CardinalSplineTo.cs" />
+    <Compile Include="Shared\Fortrees.cs" />
     <Compile Include="Shared\MapGas.cs" />
+    <Compile Include="Shared\Others.cs" />
     <Compile Include="Shared\Plane\Plane.cs" />
     <Compile Include="Shared\Plane\Plane0.cs" />
     <Compile Include="Shared\Plane\Plane1.cs" />

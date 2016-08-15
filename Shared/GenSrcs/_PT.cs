@@ -150,10 +150,7 @@ namespace PT
         /// 游戏帧进度值. 代表了某时间刻度
         /// </summary>
         public int ticks = 0;
-        /// <summary>
-        /// 游堡垒的对象容器
-        /// </summary>
-        public Fortress[] Mfortress = new Fortress[2];
+
 
     }
     /// <summary>

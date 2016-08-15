@@ -15,12 +15,20 @@ namespace PT
     partial class Scene
     {
         public Cfgs cfgs;
+        Fortrees fortrees1 = new Fortrees();
+        Fortrees fortrees2 = new Fortrees();
+       
+
 
         public void Init(int ticks)
         {
             cfgs = CfgLoader.Load();
             this.ticks = ticks;
             map.Init(this, 0);   // todo: 这里直接使用模拟的配置数据 0
+
+            
+            fortrees1.Init( fortrees2, ticks,map.cfg);
+            fortrees2.Init(fortrees1, ticks, map.cfg, true);
         }
         public void Restore()
         {
@@ -120,6 +128,8 @@ namespace PT
             foreach (var p in planes) p.Update1(ticks);
             foreach (var p in planes) p.Update2(ticks);
 
+            fortrees1.Update(ticks);
+            fortrees2.Update(ticks);
             // 5. 找出上一步打死的飞机做清除操作
             for (int i = planes.Count - 1; i >= 0; --i)
             {
