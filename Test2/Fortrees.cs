@@ -61,6 +61,9 @@ public class Fortrees
     Ellipse circle;             // 本体 显示对象
     Ellipse bullet;             // 子弹 显示对象
     Ellipse circlefill;
+    ArcSegment arcline;
+    Path myPath;
+    PathGeometry pathgeometry;
     CardinalSplineTo action;    // 动作控制器
     SolidColorBrush mySolidColorBrush;
     Thickness thickness;
@@ -77,7 +80,7 @@ public class Fortrees
     bool bulletAlive;           // 子弹存活中
     XY bulletPos;               // 当前子弹位置( fire 状态专属 )
     XY bulletMoveInc;           // 帧移动增量( 发射瞬间算出来的 )( fire 状态专属 )
-
+    
     public void DrawInit()
     {
         var s = new Size { width = (int)root.Width, height = (int)root.Height };
@@ -114,8 +117,8 @@ public class Fortrees
         circle.StrokeThickness = 2;
         circle.Stroke = Brushes.Red;
         
-        root.Children.Add(circle);
-        root.Children.Add(circlefill);
+         root.Children.Add(circle);
+//         root.Children.Add(circlefill);
 
         // bullet
         bullet = new Ellipse();
@@ -124,6 +127,39 @@ public class Fortrees
         bullet.StrokeThickness = 2;
         bullet.Stroke = Brushes.Blue;
         root.Children.Add(bullet);
+
+
+        arcline = new ArcSegment();
+        arcline.Point = new Point(pos.x+ circle.Width/2, pos.y);
+        arcline.Size = new System.Windows.Size(circlefill.Width/2, circlefill.Width/2);
+        arcline.RotationAngle = 360;
+        arcline.IsLargeArc = true;
+        arcline.SweepDirection = SweepDirection.Clockwise;
+
+        PathSegmentCollection pathsegmentCollection = new PathSegmentCollection();
+        pathsegmentCollection.Add(arcline);
+
+        PathFigure pathFigure = new PathFigure();
+        pathFigure.StartPoint = new Point(pos.x- circle.Width/2, pos.y);
+        pathFigure.Segments = pathsegmentCollection;
+
+        PathFigureCollection pathFigureCollection = new PathFigureCollection();
+        pathFigureCollection.Add(pathFigure);
+
+        myPath = new Path();
+        pathgeometry = new PathGeometry();
+        pathgeometry.Figures = pathFigureCollection;
+
+
+        myPath.Stroke = Brushes.Red;
+        myPath.StrokeThickness = 1;
+        myPath.Fill = mySolidColorBrush;
+        myPath.Data = pathgeometry;
+
+        root.Children.Add(myPath);
+        //  Size arcsize = new Size { width = (int)circlefill.Width, height = (int)circlefill.Height };
+
+
     }
     public void DrawUpdate()
     {
