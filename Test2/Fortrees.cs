@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -62,11 +63,15 @@ public class Fortrees
     Ellipse bullet;             // 子弹 显示对象
     Ellipse circlefill;
     ArcSegment arcline;
+    ArcSegment arclinedown;
     Path myPath;
     PathGeometry pathgeometry;
     CardinalSplineTo action;    // 动作控制器
     SolidColorBrush mySolidColorBrush;
     Thickness thickness;
+
+    Rectangle rectFortrees;
+    Rectangle rectFill;
 
     FortreesCfg cfg;
     Fortrees others;            // 指向另外一个实例( 当前游戏模式就是两个 )
@@ -80,7 +85,9 @@ public class Fortrees
     bool bulletAlive;           // 子弹存活中
     XY bulletPos;               // 当前子弹位置( fire 状态专属 )
     XY bulletMoveInc;           // 帧移动增量( 发射瞬间算出来的 )( fire 状态专属 )
-    
+    XYTABLE xytable;
+    XY bulletMove;
+
     public void DrawInit()
     {
         var s = new Size { width = (int)root.Width, height = (int)root.Height };
@@ -99,13 +106,21 @@ public class Fortrees
         mySolidColorBrush = new SolidColorBrush();
         mySolidColorBrush.Color = Color.FromArgb(255, 255, 0, 0);
 
-        circlefill = new Ellipse();
-        circlefill.Width = circlefill.Height = cfg.radius * 2;
-        //circlefill.StrokeThickness = 2;
-        //circlefill.Stroke = Brushes.Blue;
+        rectFortrees = new Rectangle();
+        rectFortrees.Width = cfg.radius * 4;
+        rectFortrees.Height = cfg.radius*2;
+        rectFortrees.StrokeThickness = 2;
+        rectFortrees.Fill = mySolidColorBrush;
+        rectFortrees.SetPositon(pos);
+        root.Children.Add(rectFortrees);
 
-        circlefill.Fill = mySolidColorBrush;
-
+        rectFill = new Rectangle();
+        rectFill.Width = cfg.radius * 4;
+        rectFill.Height = cfg.radius * 2;
+        rectFill.StrokeThickness = 1;
+        rectFill.Stroke = Brushes.Red;
+        rectFill.SetPositon(pos);
+        root.Children.Add(rectFill);
 
         // circle
         circle = new Ellipse();
@@ -128,36 +143,44 @@ public class Fortrees
         bullet.Stroke = Brushes.Blue;
         root.Children.Add(bullet);
 
-
-        arcline = new ArcSegment();
-        arcline.Point = new Point(pos.x+ circle.Width/2, pos.y);
-        arcline.Size = new System.Windows.Size(circlefill.Width/2, circlefill.Width/2);
-        arcline.RotationAngle = 360;
-        arcline.IsLargeArc = true;
-        arcline.SweepDirection = SweepDirection.Clockwise;
-
-        PathSegmentCollection pathsegmentCollection = new PathSegmentCollection();
-        pathsegmentCollection.Add(arcline);
-
-        PathFigure pathFigure = new PathFigure();
-        pathFigure.StartPoint = new Point(pos.x- circle.Width/2, pos.y);
-        pathFigure.Segments = pathsegmentCollection;
-
-        PathFigureCollection pathFigureCollection = new PathFigureCollection();
-        pathFigureCollection.Add(pathFigure);
-
-        myPath = new Path();
-        pathgeometry = new PathGeometry();
-        pathgeometry.Figures = pathFigureCollection;
-
-
-        myPath.Stroke = Brushes.Red;
-        myPath.StrokeThickness = 1;
-        myPath.Fill = mySolidColorBrush;
-        myPath.Data = pathgeometry;
-
-        root.Children.Add(myPath);
-        //  Size arcsize = new Size { width = (int)circlefill.Width, height = (int)circlefill.Height };
+        hp = cfg.hp;
+//         arcline = new ArcSegment();
+//         arcline.Point = new Point(pos.x+ circle.Width/2, pos.y);
+//         arcline.Size = new System.Windows.Size(circlefill.Width/2, circlefill.Width/2);
+//         arcline.RotationAngle = 360;
+//         arcline.IsLargeArc = true;
+//         arcline.SweepDirection = SweepDirection.Clockwise;
+// 
+//         arclinedown = new ArcSegment();
+//         arclinedown.Point = new Point(pos.x + circle.Width / 2, pos.y);
+//         arclinedown.Size = new System.Windows.Size(circlefill.Width / 2, circlefill.Width / 2);
+//         arclinedown.RotationAngle = 360;
+//         arclinedown.IsLargeArc = true;
+//         arclinedown.SweepDirection = SweepDirection.Counterclockwise;
+// 
+//         PathSegmentCollection pathsegmentCollection = new PathSegmentCollection();
+//         pathsegmentCollection.Add(arcline);
+//         pathsegmentCollection.Add(arclinedown);
+// 
+//         PathFigure pathFigure = new PathFigure();
+//         pathFigure.StartPoint = new Point(pos.x- circle.Width/2, pos.y);
+//         pathFigure.Segments = pathsegmentCollection;
+// 
+//         PathFigureCollection pathFigureCollection = new PathFigureCollection();
+//         pathFigureCollection.Add(pathFigure);
+// 
+//         myPath = new Path();
+//         pathgeometry = new PathGeometry();
+//         pathgeometry.Figures = pathFigureCollection;
+// 
+// 
+//         myPath.Stroke = Brushes.Red;
+//         myPath.StrokeThickness = 1;
+//         myPath.Fill = mySolidColorBrush;
+//         myPath.Data = pathgeometry;
+// 
+//         root.Children.Add(myPath);
+//  Size arcsize = new Size { width = (int)circlefill.Width, height = (int)circlefill.Height };
 
 
     }
@@ -168,7 +191,9 @@ public class Fortrees
             DrawInit();
         }
         circle.SetPositon(pos + new XY(-cfg.radius, -cfg.radius));
-        circlefill.SetPositon(pos + new XY(-cfg.radius, -cfg.radius));
+     //   circlefill.SetPositon(pos + new XY(-cfg.radius, -cfg.radius));
+        rectFortrees.SetPositon(pos + new XY(-cfg.radius, -cfg.radius));
+        rectFill.SetPositon(pos + new XY(-cfg.radius, -cfg.radius));
         if (bulletAlive)
         {
             bullet.Visibility = Visibility.Visible;
@@ -194,6 +219,7 @@ public class Fortrees
 
         // 假设这个就是地图大小
         var s = new Size { width = (int)root.Width, height = (int)root.Height };
+        xytable = XYTABLE.GetInstance((int)root.Width, (int)root.Height);
 
         // 轨迹矩形大小
         var wh = new Size { width = s.width - cfg.margin * 2, height = s.height - cfg.margin * 2 };
@@ -218,6 +244,51 @@ public class Fortrees
         var time = moveTicks * ticks2secScale + floatTimespan;
         pos = action.Calc(time);
         DrawUpdate();
+
+       long nsecont= System.DateTime.Now.Ticks;
+        for (int i = 0; i < (int)root.Height; i++)
+        {
+            for (int j = 0; j < (int)root.Width; j++)
+            {
+                XY a = new XY(i, j);
+                XY b = new XY((int)root.Height - i - 1, (int)root.Width - j - 1);
+                 double avalue = xytable.GetAngle(a,b);
+              //  bulletMoveInc = xytable.GetForward(avalue);
+            //    int index = xytable.GetAngleIndex(a, b);
+                //int index = i * (j + 1);
+//                 if (index >= 0)
+//                 {
+//                     var avalue = xytable.GetAngle(index);
+//                     bulletMoveInc = xytable.GetForward(index);
+//                 }
+//                 else
+//                 {
+//                     Console.WriteLine("GetIndex Faile ");
+//                 }
+            }
+        }
+
+
+        long nowsec = System.DateTime.Now.Ticks - nsecont;
+        Console.WriteLine("secxytable " + nowsec);
+
+        nsecont = System.DateTime.Now.Ticks;
+        for (int i = 0; i < (int)root.Width; i++)
+        {
+            for (int j = 0; j < (int)root.Height; j++)
+            {
+                XY a = new XY(i, j);
+                XY b = new XY((int)root.Width - i - 1, (int)root.Height - j - 1);
+
+
+                var avalue = XY.Angle(a,b);
+                bulletMoveInc = XY.Forward(avalue);
+            }
+        }
+
+         nowsec = System.DateTime.Now.Ticks - nsecont;
+        Console.WriteLine("secxy " + nowsec);
+
     }
 
     float ticks2secScale;
@@ -240,10 +311,21 @@ public class Fortrees
                     currState = FortreesStates.Fire;
                     stateTicks = ticks + cfg.fireTimespanTicks;
                     // 发射子弹: 根据两点算角度, 得增量, 以当前圆心, 半径来算出初始坐标
-                    var a = XY.Angle(pos, others.pos);
-                    bulletMoveInc = XY.Forward(a);
-                    bulletPos = pos + bulletMoveInc * cfg.radius;
-                    bulletAlive = true;
+                    int index = xytable.GetAngleIndex(pos, others.pos);
+                    if(index >=0)
+                    {
+                        var b = xytable.GetAngle(index);
+                        bulletMove = xytable.GetForward(index);
+                        bulletPos = pos + bulletMove * cfg.radius;
+                        bulletAlive = true;
+                    }
+//                     var b = xytable.GetAngle(pos, others.pos);
+//                     bulletMove = xytable.GetForward(b);
+
+//                     var a = XY.Angle(pos, others.pos);
+//                     bulletMoveInc = XY.Forward(a);
+//                     bulletPos = pos + bulletMoveInc * cfg.radius;
+//                     bulletAlive = true;
                 }
                 else
                 {
@@ -265,13 +347,23 @@ public class Fortrees
 
         if (bulletAlive && stateTicks != ticks + cfg.fireTimespanTicks)      // move 刚转 fire 的时候的初始坐标就不必计算移动了
         {
-            bulletPos += bulletMoveInc * cfg.bulletMoveSpeedPerFrame;
-
+            //bulletPos += bulletMoveInc * cfg.bulletMoveSpeedPerFrame;
+            bulletPos += bulletMove * cfg.bulletMoveSpeedPerFrame;
             if (XY.DistancePow2(bulletPos, others.pos) <= cfg.bulletRadius * cfg.bulletRadius + cfg.radius * cfg.radius)
             {
+                if(hp >= cfg.bulletDamage)
+                {
+                    hp -= cfg.bulletDamage;
+                    rectFortrees.Height -= (double)cfg.bulletDamage / (double)cfg.hp * rectFortrees.Height;
+                }
+                else
+                {
+                    
+                }
                 // todo: 击中减血
-                circlefill.Width-= 2;
-                circlefill.Height-=2;
+                
+//                 circlefill.Width-= 2;
+//                 circlefill.Height-=2;
                 bulletAlive = false;
             }
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,13 +7,16 @@ namespace xxlib
 {
     public struct XY : IBBReader, IBBWriter
     {
-        public XY(float x, float y) { this.x = x; this.y = y; }
-
+ 
+       public XY(float x, float y) { this.x = x; this.y = y; }
+   
+  
         public void SetZero()
         {
             x = y = 0;
         }
 
+     
         public float x, y;
         public static XY operator *(XY a, float b)
         {
@@ -26,6 +30,34 @@ namespace xxlib
             a.y += b.y;
             return a;
         }
+
+//         public static bool operator ==(XY a, XY b)
+//         {
+//             return   a.x == b.x && a.y == b.y;
+//         }
+// 
+//         public static bool operator !=(XY a, XY b)
+//         {
+//             return a.x != b.x || a.y != b.y;
+//         }
+
+        public bool EqualsOther(XY o)
+        {
+            if (EqualsTo(o))
+            {
+                return true;
+            }
+
+            if ((x >= o.x && x - o.x <= 1) || (x <= o.x && o.x - x <= 1))
+            {
+                if ((y >= o.y && y - o.y <= 1) || (y <= o.y && o.y - y <= 1))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public bool EqualsTo(XY o)
         {
             return x == o.x && y == o.y;
@@ -60,6 +92,13 @@ namespace xxlib
         public bool Contains(float width, float height)
         {
             return x >= 0 && x <= width && y >= 0 && y <= height;
+        }
+
+        public XY toInt()
+        {
+            this.x = (int)this.x;
+            this.y = (int)this.y;
+            return this;
         }
 
         public override string ToString()
@@ -303,5 +342,127 @@ namespace xxlib
         }
 
         #endregion
+    }
+    public  class XYTABLE
+    {
+        private static XYTABLE xyInstance;
+        public   double[] AngleList;
+        public  XY[] ForwardList;
+        public XY[] XyAngleIndex;
+        public double[] ForwardIndex;
+        public Hashtable XyhashAngle;
+        int m_width;
+        int m_height;
+        private XYTABLE(int width , int height)
+        {
+            m_width = width;
+            m_height = height;
+            AngleList = new double[width * height];
+            ForwardList = new XY[width * height];
+            XyAngleIndex = new XY[width * height];
+            ForwardIndex= new double[width * height];
+            //  XyhashIndex = new int[width * height];
+            XyhashAngle = new Hashtable();
+            ComputeResult();
+        }
+
+        public static XYTABLE GetInstance(int width, int height)
+        {
+            if (xyInstance == null)
+            {
+                xyInstance = new XYTABLE(width,height);
+            }
+            return xyInstance;
+        }
+
+        private  double Angle(XY b)
+        {
+            return Math.Atan2(b.y, b.x);
+        }
+
+        private  XY Forward(double angle, double distance = 1)
+        {
+            XY rtv;
+            rtv.x = (float)(Math.Cos(angle) * distance);
+            rtv.y = (float)(Math.Sin(angle) * distance);
+            return rtv;
+        }
+
+        public void ComputeResult()
+        {
+
+           for (int i = 0; i < m_height; i++)
+            {
+                for (int j = 0; j < m_width; j++)
+                {
+                    XY a = new XY(i, j);
+                    XY b = new XY(m_height - i - 1, m_width - j - 1);
+                    b.x -= a.x;
+                    b.y -= a.y;
+
+                    // XyHashtable.Add(b);
+                   
+                    XyAngleIndex[j + (i * m_width)] = b;
+                
+                    double dangle = Angle( b);
+                    AngleList[j + (i * m_width)] = dangle;
+
+                    XyhashAngle.Add(b, dangle);
+
+                    ForwardIndex[j + (i * m_width)] = dangle;
+                    ForwardList[j + (i * m_width)] = Forward(dangle);
+                }
+            }
+        }
+
+
+        public int GetAngleIndex(XY a, XY b)
+        {
+            b.x -= a.x;
+            b.y -= a.y;
+            b = b.toInt();
+           
+            return -1;
+        }
+        public double GetAngle(XY a, XY b)
+        {
+           b.x -= a.x;
+            b.y -= a.y;
+            b = b.toInt();
+            if(XyhashAngle.ContainsKey(b))
+            {
+                return (double)XyhashAngle[b];
+            }
+//             for (int i = 0; i < m_width*m_height; i++)
+//             {
+//                 if(XyAngleIndex[i].Equals(b))
+//                 {
+//                     return AngleList[i];
+//                 }
+//             }
+            return 0.0f;
+        }
+
+        public XY GetForward(double angle, double distance = 1)
+        {
+            for (int i = 0; i < m_width * m_height; i++)
+            {
+                if (ForwardIndex[i].Equals(angle))
+                {
+                    return ForwardList[i];
+                }
+            }
+            return new XY(0, 0);
+        }
+        public double GetAngle(int index)
+        {
+            return AngleList[index];
+        }
+
+        public XY GetForward(int index)
+        {
+            return ForwardList[index];
+        }
+
     }
 }
